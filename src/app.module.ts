@@ -8,6 +8,9 @@ import { randomUUID } from 'crypto';
 import { validateEnv } from './core/config/env.validation.js';
 import { PrismaModule } from './core/prisma/prisma.module.js';
 import { HealthController } from './health.controller.js';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { AllExceptionsFilter } from './core/filters/all-exceptions.filter.js';
+import { ResponseInterceptor } from './core/interceptors/response.interceptor.js';
 
 @Module({
   imports: [
@@ -28,6 +31,10 @@ import { HealthController } from './health.controller.js';
     PrismaModule,
   ],
   controllers: [HealthController],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+    providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_FILTER, useClass: AllExceptionsFilter },
+    { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
+  ],
 })
 export class AppModule {}
