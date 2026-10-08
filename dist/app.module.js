@@ -14,6 +14,9 @@ import { randomUUID } from 'crypto';
 import { validateEnv } from './core/config/env.validation.js';
 import { PrismaModule } from './core/prisma/prisma.module.js';
 import { HealthController } from './health.controller.js';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { AllExceptionsFilter } from './core/filters/all-exceptions.filter.js';
+import { ResponseInterceptor } from './core/interceptors/response.interceptor.js';
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -36,7 +39,11 @@ AppModule = __decorate([
             PrismaModule,
         ],
         controllers: [HealthController],
-        providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+        providers: [
+            { provide: APP_GUARD, useClass: ThrottlerGuard },
+            { provide: APP_FILTER, useClass: AllExceptionsFilter },
+            { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
+        ],
     })
 ], AppModule);
 export { AppModule };

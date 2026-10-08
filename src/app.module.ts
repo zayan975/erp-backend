@@ -8,14 +8,18 @@ import { randomUUID } from 'crypto';
 import { validateEnv } from './core/config/env.validation.js';
 import { PrismaModule } from './core/prisma/prisma.module.js';
 import { HealthController } from './health.controller.js';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AllExceptionsFilter } from './core/filters/all-exceptions.filter.js';
 import { ResponseInterceptor } from './core/interceptors/response.interceptor.js';
+import { TenantModule } from './core/tenant/tenant.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }), //konsa user konsi compnay check krta ha
     ClsModule.forRoot({ global: true, middleware: { mount: true } }),
+    TenantModule,
+    AuthModule,
     LoggerModule.forRoot({
       pinoHttp: {
         genReqId: (req, res) => {
