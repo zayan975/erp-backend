@@ -9,6 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Controller, Get } from '@nestjs/common';
 import { PrismaService } from './core/prisma/prisma.service.js';
+import { Public } from './core/auth/auth.decorators.js';
 let HealthController = class HealthController {
     prisma;
     constructor(prisma) {
@@ -26,6 +27,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], HealthController.prototype, "check", null);
 HealthController = __decorate([
+    Public(),
     Controller('health'),
     __metadata("design:paramtypes", [PrismaService])
 ], HealthController);

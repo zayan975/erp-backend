@@ -17,6 +17,8 @@ import { HealthController } from './health.controller.js';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AllExceptionsFilter } from './core/filters/all-exceptions.filter.js';
 import { ResponseInterceptor } from './core/interceptors/response.interceptor.js';
+import { TenantModule } from './core/tenant/tenant.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -24,6 +26,8 @@ AppModule = __decorate([
         imports: [
             ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
             ClsModule.forRoot({ global: true, middleware: { mount: true } }),
+            TenantModule,
+            AuthModule,
             LoggerModule.forRoot({
                 pinoHttp: {
                     genReqId: (req, res) => {

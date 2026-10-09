@@ -8,25 +8,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { PrismaPg } from '@prisma/adapter-pg';
 import { ClsService } from 'nestjs-cls';
-import { PrismaClient } from '../../generated/prisma/client.js';
-import { createTenantClient } from '../tenant/tenant-client.js';
-let PrismaService = class PrismaService extends PrismaClient {
-    tenant;
-    constructor(config, cls) {
-        super({
-            adapter: new PrismaPg({ connectionString: config.getOrThrow('DATABASE_URL') }),
-        });
-        this.tenant = createTenantClient(this, () => cls.get('companyId'));
+let TenantContext = class TenantContext {
+    cls;
+    constructor(cls) {
+        this.cls = cls;
     }
-    async onModuleInit() { await this.$connect(); }
-    async onModuleDestroy() { await this.$disconnect(); }
+    get companyId() {
+        const id = this.cls.get('companyId');
+        if (!id)
+            throw new Error('No tenant context (is the request authenticated?)');
+        return id;
+    }
+    get userId() { return this.cls.get('userId'); }
+    get permissions() { return this.cls.get('permissions') ?? []; }
+    set(values) {
+        this.cls.set('companyId', values.companyId);
+        this.cls.set('userId', values.userId);
+        this.cls.set('roleName', values.roleName);
+        this.cls.set('permissions', values.permissions);
+    }
 };
-PrismaService = __decorate([
+TenantContext = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [ConfigService, ClsService])
-], PrismaService);
-export { PrismaService };
-//# sourceMappingURL=prisma.service.js.map
+    __metadata("design:paramtypes", [ClsService])
+], TenantContext);
+export { TenantContext };
+//# sourceMappingURL=tenant-context.service.js.map
